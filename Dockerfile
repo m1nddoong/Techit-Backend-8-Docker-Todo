@@ -10,8 +10,10 @@ COPY . .
 # 3. 소스코드 빌드
 # RUN: 이미지를 설정하기 위한 명령어다.
 RUN <<EOF
+./gradlew bootJar
 mv build/libs/*.jar app.jar
 EOF
+
 
 # 4. Jar 파일 실행
 # CMD: 이미지를 가지고 만든 컨테이너가 실행할 명령이다.
