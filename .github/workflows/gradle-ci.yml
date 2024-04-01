@@ -24,6 +24,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       # Gradle 설정하기
+      
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3.1.0
       # Gradle Wrapper로 Test 진행
