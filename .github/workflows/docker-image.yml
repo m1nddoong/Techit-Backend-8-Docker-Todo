@@ -1,0 +1,34 @@
+name: Docker Image Delivery
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/chckout@v4
+      # 이미지 태그 설정
+      - name: Set Image Tag
+        run: echo "TAG=${data +%s)-ci}" >> "$GITHUB_OUTPUT"
+      # Docker Build 진행
+      - name: Build the Docker image
+        env:
+          TAG: ${{ steps.image-tag.outputs.TAG }}
+        run: docker build --file Dockerfile --tag "m1nddoong/todo-boot:$TAG" .
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          # 외부에 공개되면 안되는 정보를 Github의 Secrets and Variable에 저장
+          username: ${{ secret.DOCKERHUB_USERNAME }}
+          password: ${{ secret.DOCKERHUB_TOKEN }}
+      - name: Push the Docker Image
+        env:
+          TAG: ${{ step.image-tag.output.TAG}}
+        run: docker push "m1nddoong/todo-boot:$TAG"
+
+
+
+
+
