@@ -8,27 +8,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
-        uses: actions/chckout@v4
+        uses: actions/checkout@v4
       # 이미지 태그 설정
       - name: Set Image Tag
-        run: echo "TAG=${data +%s)-ci}" >> "$GITHUB_OUTPUT"
+        id: image-tag
+        run: echo "TAG=$(date +%s)-ci" >> "$GITHUB_OUTPUT"
       # Docker Build 진행
       - name: Build the Docker image
         env:
           TAG: ${{ steps.image-tag.outputs.TAG }}
-        run: docker build --file Dockerfile --tag "m1nddoong/todo-boot:$TAG" .
-      - name: Login to Docker Hub
+        run: docker build --file Dockerfile --tag "${{ secrets.DOCKERHUB_USERNAME }}/todo-boot:$TAG" .
+      - name: Login To Docker Hub
         uses: docker/login-action@v3
         with:
-          # 외부에 공개되면 안되는 정보를 Github의 Secrets and Variable에 저장
-          username: ${{ secret.DOCKERHUB_USERNAME }}
-          password: ${{ secret.DOCKERHUB_TOKEN }}
+          # 외부에 공개되면 안되는 정보를 Github의 Secrets and Variables에 저장
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push the Docker Image
         env:
-          TAG: ${{ step.image-tag.output.TAG}}
-        run: docker push "m1nddoong/todo-boot:$TAG"
-
-
-
-
-
+          TAG: ${{ steps.image-tag.outputs.TAG }}
+        run: docker push "${{ secrets.DOCKERHUB_USERNAME }}/todo-boot:$TAG"
